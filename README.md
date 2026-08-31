@@ -25,7 +25,7 @@ It does **not** publish the Nulx Linux product source tree, private build pipeli
 
 Every release begins on the [Releases page](https://github.com/Alhasan100/Nulx-Linux-Releases/releases), which is the canonical record for the version and its verification files. GitHub currently requires each individual Release asset to be under 2 GiB. The current unreleased candidate exceeds that limit, so it cannot be uploaded unchanged as one GitHub asset.
 
-Before the first beta, the ISO will either be reduced below that limit or hosted at the dedicated HTTPS download endpoint named in the signed manifest. No external host is official merely because it contains a file named Nulx Linux. Each approved release must include:
+Cloudflare R2 Standard has been selected as the planned ISO host behind `https://downloads.nulxlinux.com`. The bucket and production custom domain are not yet configured or release-approved. No object is official merely because it appears at that hostname: users must start from the canonical GitHub Release and follow only the exact URL, size, and SHA-256 bound by its signed manifest. Each approved release must include:
 
 | Artifact | Purpose |
 | --- | --- |
