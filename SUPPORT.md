@@ -9,7 +9,7 @@ Nulx Linux is currently preparing its first public beta. Community support begin
 - Hardware or hypervisor result: use the [compatibility report form](https://github.com/Alhasan100/Nulx-Linux-Releases/issues/new?template=hardware-compatibility.yml).
 - Suspected vulnerability: use [private vulnerability reporting](https://github.com/Alhasan100/Nulx-Linux-Releases/security/advisories/new), never a public issue.
 
-Before reporting, verify that the ISO came from the official Releases page and record its SHA-256. Search existing issues and test the newest supported release when practical.
+Before reporting, start from the official Releases page, follow only the ISO URL recorded in that Release's signed manifest, and record the verified SHA-256. Search existing issues and test the newest supported release when practical.
 
 ## What support cannot accept
 

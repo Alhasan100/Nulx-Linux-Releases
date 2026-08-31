@@ -23,12 +23,12 @@ concurrency:
 
 jobs:
   validate-public-surface:
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Check out the public repository
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
+          ref: ${{ (github.event_name == 'release' || github.event_name == 'workflow_dispatch') && 'main' || '' }}
           fetch-depth: 0
           persist-credentials: false
 
@@ -172,12 +172,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq 'no public beta ISO is available yet' README.md
+          grep -Fq 'This repository is intentionally separated from the private engineering repository.' README.md
+          grep -Fq 'Only a successful manual run publishes the prepared draft.' README.md
           grep -Fq 'ISO images are immutable official release artifacts referenced by the signed manifest' SECURITY.md
           grep -Fq 'Binary pull requests are never accepted.' CONTRIBUTING.md
 
   validate-release-record:
     if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    needs:
+      - validate-public-surface
     runs-on: ubuntu-latest
     outputs:
       release_id: ${{ steps.validate.outputs.release_id }}
@@ -208,18 +211,58 @@ jobs:
             echo 'A release tag is required.' >&2
             exit 1
           fi
+          if [[ ! "$tag" =~ ^v?([0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?)$ ]]; then
+            echo 'Release tag must be a supported semantic version, such as v0.1.0-beta.1.' >&2
+            exit 1
+          fi
+          release_version="${BASH_REMATCH[1]}"
 
           temporary_directory="$(mktemp -d)"
           trap 'rm -rf "$temporary_directory"' EXIT
           release_json="$temporary_directory/release.json"
-          gh api "repos/$REPOSITORY/releases/tags/$tag" > "$release_json"
+          encoded_tag="$(jq -rn --arg value "$tag" '$value | @uri')"
+          gh api "repos/$REPOSITORY/releases/tags/$encoded_tag" > "$release_json"
           if [[ "$EVENT_NAME" == 'workflow_dispatch' ]] && ! jq -e '.draft == true' "$release_json" >/dev/null; then
             echo 'Manual validation publishes only a prepared draft release.' >&2
             exit 1
           fi
 
+          checked_out_main="$(git rev-parse HEAD)"
+          api_main="$(gh api "repos/$REPOSITORY/commits/main" --jq '.sha')"
+          target_commitish="$(jq -r '.target_commitish' "$release_json")"
+          if [[ "$checked_out_main" != "$api_main" ]]; then
+            echo 'The checked-out public main branch changed during release validation.' >&2
+            exit 1
+          fi
+          if [[ "$target_commitish" != 'main' && "$target_commitish" != "$api_main" ]]; then
+            echo 'Release target_commitish must be the exact validated public main commit.' >&2
+            exit 1
+          fi
+
+          tag_ref_json="$temporary_directory/tag-ref.json"
+          if gh api "repos/$REPOSITORY/git/ref/tags/$encoded_tag" > "$tag_ref_json" 2>/dev/null; then
+            tag_object_type="$(jq -r '.object.type' "$tag_ref_json")"
+            tag_object_sha="$(jq -r '.object.sha' "$tag_ref_json")"
+            tag_depth=0
+            while [[ "$tag_object_type" == 'tag' ]]; do
+              (( tag_depth += 1 ))
+              if (( tag_depth > 8 )); then
+                echo 'Release tag has an unexpectedly deep annotated-tag chain.' >&2
+                exit 1
+              fi
+              tag_object_json="$temporary_directory/tag-object-$tag_depth.json"
+              gh api "repos/$REPOSITORY/git/tags/$tag_object_sha" > "$tag_object_json"
+              tag_object_type="$(jq -r '.object.type' "$tag_object_json")"
+              tag_object_sha="$(jq -r '.object.sha' "$tag_object_json")"
+            done
+            if [[ "$tag_object_type" != 'commit' || "$tag_object_sha" != "$api_main" ]]; then
+              echo 'An existing release tag does not resolve to the validated public main commit.' >&2
+              exit 1
+            fi
+          fi
+
           release_snapshot() {
-            jq -cS '{id, tag_name, target_commitish, draft, assets: (.assets | map({id, name, size, digest, state, updated_at}) | sort_by(.id))}' "$1" \
+            jq -cS '{id, tag_name, target_commitish, name, body, draft, prerelease, assets: (.assets | map({id, name, size, digest, state, updated_at}) | sort_by(.id))}' "$1" \
               | sha256sum \
               | awk '{ print $1 }'
           }
@@ -234,6 +277,10 @@ jobs:
 
           checksum="${checksum_candidates[0]}"
           iso="${checksum%.sha256}"
+          if [[ "$iso" != "Nulx-Linux-${release_version}-amd64.iso" ]]; then
+            echo 'ISO filename version does not match the release tag.' >&2
+            exit 1
+          fi
           base="${iso%.iso}"
           release_prefix="${base%-amd64}"
 
@@ -416,7 +463,11 @@ jobs:
               re.compile("g" + r"hp_[A-Za-z0-9]{20,}"),
               re.compile("github_" + r"pat_[A-Za-z0-9_]{20,}"),
               re.compile("s" + r"k-[A-Za-z0-9_-]{20,}"),
+              re.compile("AK" + r"IA[0-9A-Z]{16}"),
+              re.compile("AI" + r"za[0-9A-Za-z_-]{30,}"),
+              re.compile("xox" + r"[baprs]-[0-9A-Za-z-]{10,}"),
               re.compile(r"(api[_-]?key|access[_-]?token|client[_-]?secret|password)\s*[:=]\s*['\"]?[A-Za-z0-9_./+=-]{8,}", re.I),
+              re.compile(r"(^|[^0-9])(10\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|192\.168\.[0-9]{1,3}\.[0-9]{1,3}|172\.(1[6-9]|2[0-9]|3[01])\.[0-9]{1,3}\.[0-9]{1,3})($|[^0-9])"),
           )
           forbidden_literals = (
               "c:\\us" + "ers\\",
@@ -425,14 +476,43 @@ jobs:
               "profile-" + "assets",
               "aa" + "os",
               "github.com/alhasan100/nulx-" + "linux.git",
+              "github.com/alhasan100/nulx-" + "linux/",
           )
+          private_source_patterns = (
+              re.compile(r"(^|[^A-Za-z0-9_])(from|import)\s+PyQt6", re.I),
+              re.compile(r"import\s+QtQuick", re.I),
+              re.compile(r"config/includes\.chroot", re.I),
+              re.compile(r"config/package-" + r"lists", re.I),
+              re.compile(r"class\s+[A-Za-z0-9_]+\((QMainWindow|QWidget)\)", re.I),
+              re.compile(r"cmake_minimum_required\(", re.I),
+              re.compile(r"(^|[^A-Za-z0-9_])(fn|func)\s+main\(", re.I),
+          )
+          release_name = release.get("name") or ""
+          release_body = release.get("body") or ""
+          if not isinstance(release_name, str) or not isinstance(release_body, str):
+              raise SystemExit("Release name and body must be text.")
+          if len(release_name) > 256 or len(release_body) > 100_000:
+              raise SystemExit("Release name or body exceeds its approved size limit.")
+          release_text = release_name + "\n" + release_body
+          lowered_release_text = release_text.lower()
+          if (
+              any(pattern.search(release_text) for pattern in sensitive_patterns)
+              or any(value in lowered_release_text for value in forbidden_literals)
+              or any(pattern.search(release_text) for pattern in private_source_patterns)
+          ):
+              raise SystemExit("Sensitive or internal content found in GitHub Release metadata.")
+
           for name in sorted(text_asset_names):
               try:
                   content = (asset_directory / name).read_text(encoding="utf-8")
               except UnicodeDecodeError as error:
                   raise SystemExit(f"Text companion asset is not UTF-8: {name}") from error
               lowered_content = content.lower()
-              if any(pattern.search(content) for pattern in sensitive_patterns) or any(value in lowered_content for value in forbidden_literals):
+              if (
+                  any(pattern.search(content) for pattern in sensitive_patterns)
+                  or any(value in lowered_content for value in forbidden_literals)
+                  or any(pattern.search(content) for pattern in private_source_patterns)
+              ):
                   raise SystemExit(f"Sensitive or internal content found in companion asset: {name}")
 
           sbom = json.loads((asset_directory / (release_prefix + "-SBOM.spdx.json")).read_text(encoding="utf-8"))
@@ -448,7 +528,7 @@ jobs:
               "aa" + "os",
               "github.com/alhasan100/nulx-" + "linux.git",
           )
-          if any(value in serialized for value in forbidden):
+          if any(value in serialized for value in forbidden) or any(pattern.search(serialized) for pattern in sensitive_patterns):
               raise SystemExit("Manifest contains an internal path or private-project marker.")
 
           asset = next((item for item in release["assets"] if item["name"] == iso_name), None)
@@ -514,7 +594,7 @@ jobs:
             exit 1
           fi
           current_asset_snapshot="$({
-            jq -cS '{id, tag_name, target_commitish, draft, assets: (.assets | map({id, name, size, digest, state, updated_at}) | sort_by(.id))}' "$release_json"
+            jq -cS '{id, tag_name, target_commitish, name, body, draft, prerelease, assets: (.assets | map({id, name, size, digest, state, updated_at}) | sort_by(.id))}' "$release_json"
           } | sha256sum | awk '{ print $1 }')"
           if [[ "$current_asset_snapshot" != "$VALIDATED_ASSET_SNAPSHOT" ]]; then
             echo 'Draft release or its assets changed after validation; publication is blocked.' >&2

@@ -26,7 +26,7 @@ body:
     attributes:
       label: Download verification
       options:
-        - label: I downloaded the ISO from the official GitHub Release and its SHA-256 matched.
+        - label: I started from the official GitHub Release, followed only the ISO URL in its signed manifest, and its SHA-256 matched.
           required: true
   - type: dropdown
     id: stage
