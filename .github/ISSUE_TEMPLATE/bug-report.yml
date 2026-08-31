@@ -1,0 +1,111 @@
+name: Bug report
+description: Report a reproducible defect in an official Nulx Linux beta release.
+title: "[Bug]: "
+labels:
+  - "type:bug"
+  - "status:needs-triage"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for testing Nulx Linux. Public issues are visible to everyone. Remove credentials, personal data, internal addresses, client information, and unrelated logs before submitting.
+  - type: input
+    id: release
+    attributes:
+      label: Release tag and ISO filename
+      placeholder: "Example: v0.1.0-beta.1 — Nulx-Linux-0.1.0-beta.1-amd64.iso"
+    validations:
+      required: true
+  - type: input
+    id: sha256
+    attributes:
+      label: Verified ISO SHA-256
+      description: Paste the complete SHA-256 from your local ISO verification.
+    validations:
+      required: true
+  - type: checkboxes
+    id: verification
+    attributes:
+      label: Download verification
+      options:
+        - label: I downloaded the ISO from the official GitHub Release and its SHA-256 matched.
+          required: true
+        - label: I searched existing issues for this problem.
+          required: true
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - Boot or live session
+        - Installer
+        - Login, lock, shutdown, or restart
+        - Plasma desktop or visual shell
+        - Nulx Launcher
+        - Nulx Terminal
+        - Nulx Command Center
+        - Nulx AI or Offline Guide
+        - Tool registry or packaged tool
+        - Networking, audio, Bluetooth, or hardware
+        - Update or package management
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - Physical computer
+        - Hyper-V
+        - QEMU or KVM
+        - Proxmox
+        - VMware
+        - VirtualBox
+        - Other virtual machine
+    validations:
+      required: true
+  - type: textarea
+    id: system
+    attributes:
+      label: System details
+      description: Include model or hypervisor version, CPU, RAM, GPU, network, storage controller, UEFI or legacy boot, Secure Boot state, live or installed session, and Wayland or X11 when relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      placeholder: |
+        1. Boot or log in...
+        2. Open...
+        3. Select...
+        4. Observe...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Minimal sanitized diagnostics
+      description: Paste only relevant redacted lines or attach a redacted screenshot. Do not upload a full support bundle, VM disk, packet capture, credential, or private data.
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Public-data confirmation
+      options:
+        - label: I reviewed this report and its attachments and removed secrets, personal data, client information, internal identifiers, and unauthorized target data.
+          required: true
+        - label: This is an ordinary defect, not a security vulnerability that should be reported privately.
+          required: true

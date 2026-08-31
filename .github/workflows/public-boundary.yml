@@ -1,0 +1,524 @@
+name: Public repository boundary
+
+on:
+  push:
+  pull_request:
+  release:
+    types:
+      - published
+      - edited
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Prepared draft release tag to validate and publish
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-release-${{ github.repository }}-${{ inputs.release_tag || github.event.release.tag_name || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate-public-surface:
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the public repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Enforce clean public history and content
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          is_allowed_path() {
+            case "$1" in
+              .gitignore|README.md|LICENSE|SECURITY.md|SUPPORT.md|CONTRIBUTING.md|CODE_OF_CONDUCT.md) return 0 ;;
+              docs/BETA-TESTING.md|docs/VERIFY-DOWNLOAD.md|docs/PRIVACY-AND-REDACTION.md) return 0 ;;
+              keys/nulx-release-public-key.asc) return 0 ;;
+              .github/CODEOWNERS|.github/pull_request_template.md) return 0 ;;
+              .github/ISSUE_TEMPLATE/config.yml|.github/ISSUE_TEMPLATE/bug-report.yml|.github/ISSUE_TEMPLATE/installation-report.yml|.github/ISSUE_TEMPLATE/hardware-compatibility.yml) return 0 ;;
+              .github/workflows/public-boundary.yml) return 0 ;;
+              *) return 1 ;;
+            esac
+          }
+
+          failure=0
+          temporary_directory="$(mktemp -d)"
+          trap 'rm -rf "$temporary_directory"' EXIT
+          blob_list="$temporary_directory/blob-list"
+          blob_file="$temporary_directory/blob"
+          : > "$blob_list"
+
+          while IFS= read -r commit; do
+            while IFS= read -r -d '' entry; do
+              metadata="${entry%%$'\t'*}"
+              path="${entry#*$'\t'}"
+              mode="${metadata%% *}"
+              remainder="${metadata#* }"
+              object_type="${remainder%% *}"
+              object="${metadata##* }"
+
+              if [[ "$mode" != '100644' || "$object_type" != 'blob' ]]; then
+                printf 'Forbidden historical Git entry: mode=%q type=%q path=%q\n' "$mode" "$object_type" "$path" >&2
+                failure=1
+                continue
+              fi
+
+              if ! is_allowed_path "$path"; then
+                printf 'Forbidden path in reachable Git history: %q\n' "$path" >&2
+                failure=1
+              fi
+
+              printf '%s\n' "$object" >> "$blob_list"
+            done < <(git ls-tree -rz --full-tree "$commit")
+          done < <(git rev-list --all)
+
+          sort -u "$blob_list" -o "$blob_list"
+          while IFS= read -r object; do
+            [[ -n "$object" ]] || continue
+            size="$(git cat-file -s "$object")"
+            if (( size > 1048576 )); then
+              echo "Git blob exceeds the 1 MiB public-history limit: $object" >&2
+              failure=1
+              continue
+            fi
+
+            git cat-file blob "$object" > "$blob_file"
+            first_line="$(sed -n '1p' "$blob_file")"
+            if [[ "$first_line" == 'version https://git-lfs.github.com/spec/v1' ]]; then
+              echo "Git LFS pointer is forbidden: $object" >&2
+              failure=1
+            fi
+
+            python_blob_file="$blob_file"
+            if command -v cygpath >/dev/null 2>&1; then
+              python_blob_file="$(cygpath -w "$blob_file")"
+            fi
+
+            if ! python3 - "$python_blob_file" "$object" <<'PY'
+          import pathlib
+          import re
+          import sys
+
+          path = pathlib.Path(sys.argv[1])
+          object_id = sys.argv[2]
+          data = path.read_bytes()
+          if b"\x00" in data:
+              raise SystemExit(f"Non-text Git blob is forbidden: {object_id}")
+          try:
+              text = data.decode("utf-8")
+          except UnicodeDecodeError:
+              raise SystemExit(f"Non-UTF-8 Git blob is forbidden: {object_id}")
+          if any(ord(character) < 32 and character not in "\n\r\t\f" for character in text):
+              raise SystemExit(f"Control characters are forbidden in Git blob: {object_id}")
+
+          sensitive_patterns = (
+              re.compile(r"-----BEGIN [A-Z0-9 ]*PRIVATE " + "KEY" + r"( BLOCK)?-----", re.I),
+              re.compile("g" + r"hp_[A-Za-z0-9]{20,}"),
+              re.compile("github_" + r"pat_[A-Za-z0-9_]{20,}"),
+              re.compile("s" + r"k-[A-Za-z0-9_-]{20,}"),
+              re.compile("AK" + r"IA[0-9A-Z]{16}"),
+              re.compile("AI" + r"za[0-9A-Za-z_-]{30,}"),
+              re.compile("xox" + r"[baprs]-[0-9A-Za-z-]{10,}"),
+              re.compile(r"(api[_-]?key|access[_-]?token|client[_-]?secret|password)\s*[:=]\s*['\"]?[A-Za-z0-9_./+=-]{8,}", re.I),
+              re.compile(r"/home/[A-Za-z0-9._-]+/", re.I),
+              re.compile(r"nulxlinux[0-9]{2,}", re.I),
+              re.compile(r"(^|[^0-9])(10\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|192\.168\.[0-9]{1,3}\.[0-9]{1,3}|172\.(1[6-9]|2[0-9]|3[01])\.[0-9]{1,3}\.[0-9]{1,3})($|[^0-9])"),
+          )
+          sensitive_literals = (
+              "c:\\us" + "ers\\",
+              ".co" + "dex",
+              "profile-" + "assets",
+              "aa" + "os",
+              "github.com/alhasan100/nulx-" + "linux.git",
+              "github.com/alhasan100/nulx-" + "linux/",
+          )
+          private_source_patterns = (
+              re.compile(r"(^|[^A-Za-z0-9_])(from|import)\s+PyQt6", re.I),
+              re.compile(r"import\s+QtQuick", re.I),
+              re.compile(r"config/includes\.chroot", re.I),
+              re.compile(r"config/package-" + r"lists", re.I),
+              re.compile(r"(^|/)usr/(share|lib)/nulx", re.I),
+              re.compile(r"class\s+[A-Za-z0-9_]+\((QMainWindow|QWidget)\)", re.I),
+              re.compile(r"cmake_minimum_required\(", re.I),
+              re.compile(r"(^|[^A-Za-z0-9_])(fn|func)\s+main\(", re.I),
+          )
+
+          lowered = text.lower()
+          if any(pattern.search(text) for pattern in sensitive_patterns):
+              raise SystemExit(f"Sensitive-content pattern found in Git blob: {object_id}")
+          if any(literal in lowered for literal in sensitive_literals):
+              raise SystemExit(f"Sensitive-content marker found in Git blob: {object_id}")
+          if any(pattern.search(text) for pattern in private_source_patterns):
+              raise SystemExit(f"Private-product-source marker found in Git blob: {object_id}")
+          PY
+            then
+              failure=1
+            fi
+          done < "$blob_list"
+
+          if (( failure != 0 )); then
+            exit 1
+          fi
+
+      - name: Confirm repository intent
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'no public beta ISO is available yet' README.md
+          grep -Fq 'ISO images are immutable official release artifacts referenced by the signed manifest' SECURITY.md
+          grep -Fq 'Binary pull requests are never accepted.' CONTRIBUTING.md
+
+  validate-release-record:
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    outputs:
+      release_id: ${{ steps.validate.outputs.release_id }}
+      release_tag: ${{ steps.validate.outputs.release_tag }}
+      asset_snapshot: ${{ steps.validate.outputs.asset_snapshot }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: ${{ github.repository }}
+      EVENT_TAG: ${{ github.event.release.tag_name }}
+      INPUT_TAG: ${{ inputs.release_tag }}
+      EVENT_NAME: ${{ github.event_name }}
+    steps:
+      - name: Check out the approved public release key
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Validate signatures, companion files, and complete ISO
+        id: validate
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          tag="${INPUT_TAG:-${EVENT_TAG:-}}"
+          if [[ -z "$tag" ]]; then
+            echo 'A release tag is required.' >&2
+            exit 1
+          fi
+
+          temporary_directory="$(mktemp -d)"
+          trap 'rm -rf "$temporary_directory"' EXIT
+          release_json="$temporary_directory/release.json"
+          gh api "repos/$REPOSITORY/releases/tags/$tag" > "$release_json"
+          if [[ "$EVENT_NAME" == 'workflow_dispatch' ]] && ! jq -e '.draft == true' "$release_json" >/dev/null; then
+            echo 'Manual validation publishes only a prepared draft release.' >&2
+            exit 1
+          fi
+
+          release_snapshot() {
+            jq -cS '{id, tag_name, target_commitish, draft, assets: (.assets | map({id, name, size, digest, state, updated_at}) | sort_by(.id))}' "$1" \
+              | sha256sum \
+              | awk '{ print $1 }'
+          }
+          initial_asset_snapshot="$(release_snapshot "$release_json")"
+
+          mapfile -t names < <(jq -r '.assets[] | select(.state == "uploaded") | .name' "$release_json")
+          mapfile -t checksum_candidates < <(printf '%s\n' "${names[@]}" | grep -E '^Nulx-Linux-[0-9A-Za-z._-]+-amd64\.iso\.sha256$' || true)
+          if (( ${#checksum_candidates[@]} != 1 )); then
+            echo 'Release must contain exactly one versioned amd64 ISO checksum file.' >&2
+            exit 1
+          fi
+
+          checksum="${checksum_candidates[0]}"
+          iso="${checksum%.sha256}"
+          base="${iso%.iso}"
+          release_prefix="${base%-amd64}"
+
+          signatures=()
+          for candidate in "${names[@]}"; do
+            case "$candidate" in
+              "${iso}.sig"|"${iso}.asc") signatures+=("$candidate") ;;
+            esac
+          done
+          if (( ${#signatures[@]} != 1 )); then
+            echo 'Release must contain exactly one detached ISO signature.' >&2
+            exit 1
+          fi
+          signature="${signatures[0]}"
+
+          sbom="${release_prefix}-SBOM.spdx.json"
+          licenses="${release_prefix}-THIRD-PARTY-LICENSES.txt"
+          notes="${release_prefix}-RELEASE-NOTES.md"
+          manifest="${release_prefix}-MANIFEST.json"
+          manifest_signature="${manifest}.asc"
+          required_assets=("$checksum" "$signature" "$sbom" "$licenses" "$notes" "$manifest" "$manifest_signature")
+
+          has_name() {
+            local sought="$1"
+            local candidate
+            for candidate in "${names[@]}"; do
+              [[ "$candidate" == "$sought" ]] && return 0
+            done
+            return 1
+          }
+
+          for required in "${required_assets[@]}"; do
+            if ! has_name "$required"; then
+              echo "Required release asset is missing: $required" >&2
+              exit 1
+            fi
+          done
+
+          for candidate in "${names[@]}"; do
+            allowed=0
+            [[ "$candidate" == "$iso" ]] && allowed=1
+            for required in "${required_assets[@]}"; do
+              [[ "$candidate" == "$required" ]] && allowed=1
+            done
+            if (( allowed == 0 )); then
+              echo "Unexpected release asset: $candidate" >&2
+              exit 1
+            fi
+            asset_size="$(jq -r --arg name "$candidate" '.assets[] | select(.name == $name) | .size' "$release_json")"
+            if [[ ! "$asset_size" =~ ^[0-9]+$ ]] || (( asset_size == 0 )); then
+              echo "Release asset is empty or has an invalid size: $candidate" >&2
+              exit 1
+            fi
+            case "$candidate" in
+              "$signature"|"$manifest_signature"|"$checksum"|"$manifest") maximum_size=5242880 ;;
+              "$sbom") maximum_size=104857600 ;;
+              "$licenses"|"$notes") maximum_size=20971520 ;;
+              "$iso") maximum_size=2147483647 ;;
+            esac
+            if (( asset_size > maximum_size )); then
+              echo "Release asset exceeds its approved size limit: $candidate" >&2
+              exit 1
+            fi
+          done
+
+          for required in "${required_assets[@]}"; do
+            gh release download "$tag" --repo "$REPOSITORY" --dir "$temporary_directory" --pattern "$required"
+          done
+
+          public_key='keys/nulx-release-public-key.asc'
+          if [[ ! -f "$public_key" ]]; then
+            echo 'The approved Nulx release public key is not published; release is blocked.' >&2
+            exit 1
+          fi
+          export GNUPGHOME="$temporary_directory/gnupg"
+          install -d -m 700 "$GNUPGHOME"
+          gpg --batch --import-options import-minimal --import "$public_key"
+          public_key_count="$(gpg --batch --with-colons --list-keys | awk -F: '$1 == "pub" { count++ } END { print count + 0 }')"
+          secret_key_count="$(gpg --batch --with-colons --list-secret-keys 2>/dev/null | awk -F: '$1 == "sec" { count++ } END { print count + 0 }')"
+          if [[ "$public_key_count" != '1' || "$secret_key_count" != '0' ]]; then
+            echo 'Release key file must contain exactly one public key and no private key.' >&2
+            exit 1
+          fi
+          gpg --batch --verify "$temporary_directory/$manifest_signature" "$temporary_directory/$manifest"
+
+          python3 - "$release_json" "$temporary_directory/$manifest" "$temporary_directory/$checksum" "$iso" "$temporary_directory" <<'PY'
+          import hashlib
+          import json
+          import pathlib
+          import re
+          import sys
+          import urllib.parse
+
+          release_path, manifest_path, checksum_path = map(pathlib.Path, sys.argv[1:4])
+          iso_name = sys.argv[4]
+          asset_directory = pathlib.Path(sys.argv[5])
+          release = json.loads(release_path.read_text(encoding="utf-8"))
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+          if set(manifest) != {"schema_version", "release_tag", "architecture", "iso", "artifacts"}:
+              raise SystemExit("Manifest has missing or unexpected top-level fields.")
+          if manifest.get("schema_version") != 1:
+              raise SystemExit("Manifest schema_version must be 1.")
+          if manifest.get("release_tag") != release.get("tag_name"):
+              raise SystemExit("Manifest release_tag does not match the GitHub Release tag.")
+          if manifest.get("architecture") != "amd64":
+              raise SystemExit("Manifest architecture must be amd64.")
+          iso = manifest.get("iso")
+          if not isinstance(iso, dict) or set(iso) != {"filename", "url", "size", "sha256"} or iso.get("filename") != iso_name:
+              raise SystemExit("Manifest ISO filename does not match the release asset set.")
+          if not isinstance(iso.get("size"), int) or iso["size"] <= 0:
+              raise SystemExit("Manifest ISO size must be a positive integer.")
+          digest = iso.get("sha256", "")
+          if not re.fullmatch(r"[0-9a-f]{64}", digest):
+              raise SystemExit("Manifest ISO SHA-256 must be 64 lowercase hexadecimal characters.")
+
+          parsed_url = urllib.parse.urlparse(iso.get("url", ""))
+          if parsed_url.scheme != "https" or parsed_url.username or parsed_url.password or parsed_url.query or parsed_url.fragment:
+              raise SystemExit("Manifest ISO URL must be a clean HTTPS URL without credentials, query, or fragment.")
+          github_prefix = "/Alhasan100/Nulx-Linux-Releases/releases/download/"
+          if not (
+              (parsed_url.hostname == "github.com" and parsed_url.path.startswith(github_prefix))
+              or parsed_url.hostname == "downloads.nulxlinux.com"
+          ):
+              raise SystemExit("Manifest ISO URL is not on an approved official download host.")
+
+          checksum_text = checksum_path.read_text(encoding="utf-8").strip()
+          checksum_match = re.fullmatch(r"([0-9a-f]{64})[ \t]+\*?(.+)", checksum_text)
+          if not checksum_match or checksum_match.group(1) != digest or checksum_match.group(2) != iso_name:
+              raise SystemExit("Checksum file does not match the manifest ISO filename and SHA-256.")
+
+          release_prefix = iso_name.removesuffix("-amd64.iso")
+          release_names = {item["name"]: item for item in release["assets"]}
+          signature_names = [name for name in release_names if name in {iso_name + ".sig", iso_name + ".asc"}]
+          if len(signature_names) != 1:
+              raise SystemExit("Release must contain exactly one ISO signature.")
+          signature_name = signature_names[0]
+          companion_names = {
+              iso_name + ".sha256",
+              signature_name,
+              release_prefix + "-SBOM.spdx.json",
+              release_prefix + "-THIRD-PARTY-LICENSES.txt",
+              release_prefix + "-RELEASE-NOTES.md",
+          }
+          artifacts = manifest.get("artifacts")
+          if not isinstance(artifacts, dict) or set(artifacts) != companion_names:
+              raise SystemExit("Manifest artifacts must bind every non-manifest companion file exactly once.")
+
+          def sha256_file(path):
+              digest_object = hashlib.sha256()
+              with path.open("rb") as stream:
+                  for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                      digest_object.update(chunk)
+              return digest_object.hexdigest()
+
+          for name in sorted(companion_names):
+              record = artifacts[name]
+              if not isinstance(record, dict) or set(record) != {"size", "sha256"}:
+                  raise SystemExit(f"Invalid manifest record for companion asset: {name}")
+              path = asset_directory / name
+              if not path.is_file() or not isinstance(record["size"], int) or record["size"] <= 0:
+                  raise SystemExit(f"Missing or invalid companion asset: {name}")
+              if path.stat().st_size != record["size"] or sha256_file(path) != record["sha256"]:
+                  raise SystemExit(f"Companion asset does not match its manifest hash and size: {name}")
+              api_asset = release_names[name]
+              if api_asset["size"] != record["size"]:
+                  raise SystemExit(f"GitHub asset size does not match the manifest: {name}")
+              api_digest = api_asset.get("digest")
+              if api_digest and api_digest != "sha256:" + record["sha256"]:
+                  raise SystemExit(f"GitHub asset digest does not match the manifest: {name}")
+
+          text_asset_names = {
+              iso_name + ".sha256",
+              release_prefix + "-SBOM.spdx.json",
+              release_prefix + "-THIRD-PARTY-LICENSES.txt",
+              release_prefix + "-RELEASE-NOTES.md",
+          }
+          sensitive_patterns = (
+              re.compile(r"-----BEGIN [A-Z0-9 ]*PRIVATE " + "KEY" + r"( BLOCK)?-----", re.I),
+              re.compile("g" + r"hp_[A-Za-z0-9]{20,}"),
+              re.compile("github_" + r"pat_[A-Za-z0-9_]{20,}"),
+              re.compile("s" + r"k-[A-Za-z0-9_-]{20,}"),
+              re.compile(r"(api[_-]?key|access[_-]?token|client[_-]?secret|password)\s*[:=]\s*['\"]?[A-Za-z0-9_./+=-]{8,}", re.I),
+          )
+          forbidden_literals = (
+              "c:\\us" + "ers\\",
+              "/ho" + "me/",
+              ".co" + "dex",
+              "profile-" + "assets",
+              "aa" + "os",
+              "github.com/alhasan100/nulx-" + "linux.git",
+          )
+          for name in sorted(text_asset_names):
+              try:
+                  content = (asset_directory / name).read_text(encoding="utf-8")
+              except UnicodeDecodeError as error:
+                  raise SystemExit(f"Text companion asset is not UTF-8: {name}") from error
+              lowered_content = content.lower()
+              if any(pattern.search(content) for pattern in sensitive_patterns) or any(value in lowered_content for value in forbidden_literals):
+                  raise SystemExit(f"Sensitive or internal content found in companion asset: {name}")
+
+          sbom = json.loads((asset_directory / (release_prefix + "-SBOM.spdx.json")).read_text(encoding="utf-8"))
+          if not isinstance(sbom, dict) or not str(sbom.get("spdxVersion", "")).startswith("SPDX-2."):
+              raise SystemExit("SBOM is not a valid SPDX 2.x JSON document.")
+
+          serialized = json.dumps(manifest, sort_keys=True).lower()
+          forbidden = (
+              "c:\\us" + "ers\\",
+              "/home/",
+              ".co" + "dex",
+              "profile-" + "assets",
+              "aa" + "os",
+              "github.com/alhasan100/nulx-" + "linux.git",
+          )
+          if any(value in serialized for value in forbidden):
+              raise SystemExit("Manifest contains an internal path or private-project marker.")
+
+          asset = next((item for item in release["assets"] if item["name"] == iso_name), None)
+          if asset is not None:
+              if asset["size"] != iso["size"]:
+                  raise SystemExit("GitHub ISO asset size does not match the manifest.")
+              api_digest = asset.get("digest")
+              if api_digest and api_digest != f"sha256:{digest}":
+                  raise SystemExit("GitHub ISO asset digest does not match the manifest.")
+              if asset["browser_download_url"] != iso["url"]:
+                  raise SystemExit("GitHub ISO asset URL does not match the manifest.")
+
+          print("RELEASE_RECORD_OK")
+          PY
+
+          iso_url="$(jq -r '.iso.url' "$temporary_directory/$manifest")"
+          expected_iso_size="$(jq -r '.iso.size' "$temporary_directory/$manifest")"
+          expected_iso_sha256="$(jq -r '.iso.sha256' "$temporary_directory/$manifest")"
+          curl --fail --location --silent --show-error --retry 3 --proto '=https' --proto-redir '=https' --max-filesize 17179869184 --output "$temporary_directory/$iso" "$iso_url"
+          actual_iso_size="$(stat -c '%s' "$temporary_directory/$iso")"
+          actual_iso_sha256="$(sha256sum "$temporary_directory/$iso" | awk '{ print $1 }')"
+          if [[ "$actual_iso_size" != "$expected_iso_size" || "$actual_iso_sha256" != "$expected_iso_sha256" ]]; then
+            echo 'Downloaded ISO does not match the signed manifest size and SHA-256.' >&2
+            exit 1
+          fi
+          gpg --batch --verify "$temporary_directory/$signature" "$temporary_directory/$iso"
+
+          final_release_json="$temporary_directory/release-final.json"
+          gh api "repos/$REPOSITORY/releases/tags/$tag" > "$final_release_json"
+          final_asset_snapshot="$(release_snapshot "$final_release_json")"
+          if [[ "$final_asset_snapshot" != "$initial_asset_snapshot" ]]; then
+            echo 'Draft release or its assets changed during validation; rerun against the new immutable candidate set.' >&2
+            exit 1
+          fi
+
+          echo "release_id=$(jq -r '.id' "$final_release_json")" >> "$GITHUB_OUTPUT"
+          echo "release_tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "asset_snapshot=$final_asset_snapshot" >> "$GITHUB_OUTPUT"
+
+  publish-validated-draft:
+    if: github.event_name == 'workflow_dispatch'
+    needs:
+      - validate-release-record
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: ${{ github.repository }}
+      RELEASE_ID: ${{ needs.validate-release-record.outputs.release_id }}
+      RELEASE_TAG: ${{ needs.validate-release-record.outputs.release_tag }}
+      VALIDATED_ASSET_SNAPSHOT: ${{ needs.validate-release-record.outputs.asset_snapshot }}
+    steps:
+      - name: Publish the validated draft
+        shell: bash
+        run: |
+          set -euo pipefail
+          release_json="$(mktemp)"
+          trap 'rm -f "$release_json"' EXIT
+          gh api "repos/$REPOSITORY/releases/$RELEASE_ID" > "$release_json"
+          if ! jq -e --arg tag "$RELEASE_TAG" '.draft == true and .tag_name == $tag' "$release_json" >/dev/null; then
+            echo 'Validated release is no longer the expected draft.' >&2
+            exit 1
+          fi
+          current_asset_snapshot="$({
+            jq -cS '{id, tag_name, target_commitish, draft, assets: (.assets | map({id, name, size, digest, state, updated_at}) | sort_by(.id))}' "$release_json"
+          } | sha256sum | awk '{ print $1 }')"
+          if [[ "$current_asset_snapshot" != "$VALIDATED_ASSET_SNAPSHOT" ]]; then
+            echo 'Draft release or its assets changed after validation; publication is blocked.' >&2
+            exit 1
+          fi
+          gh api --method PATCH "repos/$REPOSITORY/releases/$RELEASE_ID" -F draft=false >/dev/null
+          echo "Published validated immutable release: $RELEASE_TAG"

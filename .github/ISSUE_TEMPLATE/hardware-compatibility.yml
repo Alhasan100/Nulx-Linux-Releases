@@ -1,0 +1,79 @@
+name: Hardware or VM compatibility
+description: Submit a successful, partial, or failed compatibility result for an official release.
+title: "[Compatibility]: "
+labels:
+  - "type:hardware"
+  - "status:needs-triage"
+body:
+  - type: input
+    id: release
+    attributes:
+      label: Release tag and ISO filename
+    validations:
+      required: true
+  - type: input
+    id: sha256
+    attributes:
+      label: Verified ISO SHA-256
+    validations:
+      required: true
+  - type: checkboxes
+    id: verification
+    attributes:
+      label: Download verification
+      options:
+        - label: I downloaded the ISO from the official GitHub Release and its SHA-256 matched.
+          required: true
+  - type: dropdown
+    id: target
+    attributes:
+      label: Test target
+      options:
+        - Physical computer
+        - Hyper-V
+        - QEMU or KVM
+        - Proxmox
+        - VMware
+        - VirtualBox
+        - Other virtual machine
+    validations:
+      required: true
+  - type: textarea
+    id: hardware
+    attributes:
+      label: Hardware or VM specification
+      description: Include vendor/model or hypervisor version, CPU, RAM, GPU, wired/Wi-Fi, storage/controller, firmware mode, and Secure Boot state. Redact serial numbers and addresses.
+    validations:
+      required: true
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: Overall outcome
+      options:
+        - Fully working in tested areas
+        - Working with limitations
+        - Live session works but installation fails
+        - Boots but desktop is unusable
+        - Does not boot
+    validations:
+      required: true
+  - type: textarea
+    id: tested
+    attributes:
+      label: Tested functions
+      description: Describe boot, live desktop, installation, first boot, display, network, audio, suspend/resume, shutdown/restart, and any Nulx applications tested.
+    validations:
+      required: true
+  - type: textarea
+    id: limitations
+    attributes:
+      label: Limitations or required workarounds
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Public-data confirmation
+      options:
+        - label: I removed credentials, personal data, serial numbers, MAC addresses, private addresses, internal paths, and unauthorized target data.
+          required: true
+        - label: This is an ordinary compatibility report, not a security vulnerability that should be reported privately.
+          required: true

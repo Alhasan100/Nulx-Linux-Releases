@@ -1,0 +1,69 @@
+# Nulx Linux Releases
+
+This is the official public release and beta-feedback repository for **Nulx Linux**.
+
+> **Release status:** no public beta ISO is available yet. A download will appear only after the candidate passes the documented release gates, is signed, and its published artifacts are independently verified.
+
+## What is Nulx Linux?
+
+Nulx Linux is an independent Debian 13-based desktop distribution built around KDE Plasma 6 and a coherent Nulx visual identity. It is designed for cybersecurity learning, authorized offensive and defensive workflows, system administration, development, and everyday desktop use. It is not a Kali Linux derivative or reskin.
+
+The beta candidate is being developed around a curated security-tool registry and Nulx-branded desktop experiences such as Nulx Launcher, Nulx Terminal, Nulx Command Center, and a provider-neutral Nulx AI interface with a safe Offline Guide. A feature is considered part of the public beta only after it is present in the signed ISO and verified in the release notes.
+
+## Purpose of this repository
+
+This repository is intentionally separated from the private engineering repository. It exists only for:
+
+- the canonical release record, official ISO download location, and verification material;
+- public beta documentation;
+- installation, hardware-compatibility, and defect reports;
+- coordinated private reporting of security vulnerabilities.
+
+It does **not** publish the Nulx Linux product source tree, private build pipeline, internal CI, raw test evidence, VM images, credentials, or developer logs. GitHub's automatic source archives contain only the public documentation and repository configuration stored here.
+
+## Downloads
+
+Every release begins on the [Releases page](https://github.com/Alhasan100/Nulx-Linux-Releases/releases), which is the canonical record for the version and its verification files. GitHub currently requires each individual Release asset to be under 2 GiB. The current unreleased candidate exceeds that limit, so it cannot be uploaded unchanged as one GitHub asset.
+
+Before the first beta, the ISO will either be reduced below that limit or hosted at the dedicated HTTPS download endpoint named in the signed manifest. No external host is official merely because it contains a file named Nulx Linux. Each approved release must include:
+
+| Artifact | Purpose |
+| --- | --- |
+| `Nulx-Linux-<version>-amd64.iso` | Bootable image, hosted directly when eligible or at the signed official download URL |
+| `.iso.sha256` | SHA-256 integrity checksum |
+| `.iso.sig` or `.iso.asc` | Detached release signature |
+| `Nulx-Linux-<version>-SBOM.spdx.json` | Sanitized software bill of materials |
+| `Nulx-Linux-<version>-THIRD-PARTY-LICENSES.txt` | Third-party licensing and source-offer information |
+| `Nulx-Linux-<version>-RELEASE-NOTES.md` | Verified changes, limitations, and test coverage |
+| `Nulx-Linux-<version>-MANIFEST.json` | Sanitized filename, URL, size, architecture, and artifact hashes |
+| `Nulx-Linux-<version>-MANIFEST.json.asc` | Detached signature for the release manifest |
+
+Never download a Nulx Linux ISO from an issue attachment, pull request, unofficial mirror, or link posted by another user. Start from the official Release, follow only the ISO URL recorded in its signed manifest, and complete [Verify a download](docs/VERIFY-DOWNLOAD.md) before booting it.
+
+### Release safety process
+
+Releases are prepared as drafts. All required assets are attached to the draft, then the owner runs the repository's manual **Public repository boundary** workflow. The workflow refuses to continue unless it can verify the public release key, manifest signature, companion hashes and contents, complete ISO byte size and SHA-256, and detached ISO signature. Only a successful manual run publishes the prepared draft. GitHub release immutability is enabled so future published assets and their tag cannot be replaced silently.
+
+The public signing key has not been generated and approved yet. Until it is added at `keys/nulx-release-public-key.asc` and its fingerprint is published through an independent official channel, release validation intentionally fails.
+
+## Test and report
+
+- Read the [Beta testing guide](docs/BETA-TESTING.md).
+- [Report a general bug](https://github.com/Alhasan100/Nulx-Linux-Releases/issues/new?template=bug-report.yml).
+- [Report an installation problem](https://github.com/Alhasan100/Nulx-Linux-Releases/issues/new?template=installation-report.yml).
+- [Submit a hardware or VM compatibility result](https://github.com/Alhasan100/Nulx-Linux-Releases/issues/new?template=hardware-compatibility.yml).
+- Read [Privacy and redaction](docs/PRIVACY-AND-REDACTION.md) before attaching diagnostics.
+
+Security vulnerabilities must not be posted publicly. Use [GitHub private vulnerability reporting](https://github.com/Alhasan100/Nulx-Linux-Releases/security/advisories/new) as described in [SECURITY.md](SECURITY.md).
+
+## Responsible use
+
+Nulx Linux security functionality is intended only for systems you own or are explicitly authorized to test. Users are responsible for complying with applicable laws, contracts, and rules of engagement.
+
+## Licensing
+
+The repository documentation and configuration are licensed under the [MIT License](LICENSE). That license does not replace the individual licenses of software distributed inside a future ISO. Every upstream component keeps its own license, notices, and corresponding-source obligations.
+
+## Credit
+
+Nulx Linux was created by **Alhasan Al-Hmondi** and is being developed with a security-first, release-gated process.

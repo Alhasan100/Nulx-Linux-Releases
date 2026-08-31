@@ -1,0 +1,95 @@
+name: Installation report
+description: Report an installer, partitioning, first-boot, or installed-session problem.
+title: "[Install]: "
+labels:
+  - "type:installer"
+  - "status:needs-triage"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use an unused test disk or disposable VM when possible. Public issues must not include passwords, partition contents, personal data, raw logs, or VM disks.
+  - type: input
+    id: release
+    attributes:
+      label: Release tag and ISO filename
+    validations:
+      required: true
+  - type: input
+    id: sha256
+    attributes:
+      label: Verified ISO SHA-256
+    validations:
+      required: true
+  - type: checkboxes
+    id: verification
+    attributes:
+      label: Download verification
+      options:
+        - label: I downloaded the ISO from the official GitHub Release and its SHA-256 matched.
+          required: true
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Failure stage
+      options:
+        - ISO boot
+        - Live desktop
+        - Installer startup
+        - Disk or partition selection
+        - File installation
+        - Bootloader installation
+        - Installer completion
+        - First reboot
+        - Login or first desktop session
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: target
+    attributes:
+      label: Target
+      options:
+        - Physical computer
+        - Hyper-V
+        - QEMU or KVM
+        - Proxmox
+        - VMware
+        - VirtualBox
+        - Other virtual machine
+    validations:
+      required: true
+  - type: textarea
+    id: configuration
+    attributes:
+      label: Installation configuration
+      description: Include hardware or hypervisor version, firmware mode, Secure Boot, disk/controller type, partitioning method, encryption choice, locale, and keyboard layout. Do not include passwords.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps and observed error
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Result after reboot
+      description: State whether the live environment still boots and whether an installed boot entry or usable installed session exists.
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Minimal sanitized diagnostics
+      description: Include only the smallest relevant redacted excerpt or screenshot.
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Public-data confirmation
+      options:
+        - label: I removed credentials, personal data, serial numbers, internal paths, private addresses, and unrelated disk contents.
+          required: true
+        - label: This is not a security vulnerability that should be reported privately.
+          required: true
