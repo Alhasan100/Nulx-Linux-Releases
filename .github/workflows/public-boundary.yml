@@ -352,7 +352,7 @@ jobs:
 
           public_key='keys/nulx-release-public-key.asc'
           if [[ ! -f "$public_key" ]]; then
-            echo 'The approved Nulx release public key is not published; release is blocked.' >&2
+            echo 'The approved Nulx release public key is not published. Release is blocked.' >&2
             exit 1
           fi
           export GNUPGHOME="$temporary_directory/gnupg"
@@ -560,7 +560,7 @@ jobs:
           gh api "repos/$REPOSITORY/releases/tags/$tag" > "$final_release_json"
           final_asset_snapshot="$(release_snapshot "$final_release_json")"
           if [[ "$final_asset_snapshot" != "$initial_asset_snapshot" ]]; then
-            echo 'Draft release or its assets changed during validation; rerun against the new immutable candidate set.' >&2
+            echo 'Draft release or its assets changed during validation. Rerun against the new immutable candidate set.' >&2
             exit 1
           fi
 
@@ -597,7 +597,7 @@ jobs:
             jq -cS '{id, tag_name, target_commitish, name, body, draft, prerelease, assets: (.assets | map({id, name, size, digest, state, updated_at}) | sort_by(.id))}' "$release_json"
           } | sha256sum | awk '{ print $1 }')"
           if [[ "$current_asset_snapshot" != "$VALIDATED_ASSET_SNAPSHOT" ]]; then
-            echo 'Draft release or its assets changed after validation; publication is blocked.' >&2
+            echo 'Draft release or its assets changed after validation. Publication is blocked.' >&2
             exit 1
           fi
           gh api --method PATCH "repos/$REPOSITORY/releases/$RELEASE_ID" -F draft=false >/dev/null
