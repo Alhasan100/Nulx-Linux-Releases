@@ -9,35 +9,35 @@ No public beta ISO is available until an approved release appears on the officia
 1. Read the release notes and known limitations.
 2. Download every artifact from the same official release.
 3. Verify the ISO SHA-256 and detached signature.
-4. Back up important data before physical-hardware testing.
+4. Back up important data before testing on physical hardware.
 5. Prefer a new VM or an unused test disk for installation tests.
 6. Do not expose an untrusted beta system directly to sensitive networks or production credentials.
 7. Use security tools only on systems you own or are explicitly authorized to test.
 
-Nulx Linux targets ordinary desktop and laptop computers. VM testing is expected across Hyper-V, QEMU/KVM, Proxmox, VMware, and VirtualBox, but a platform is considered supported only when the exact release notes say so.
+Nulx Linux targets ordinary desktop and laptop computers. VM testing is expected across Hyper-V, QEMU/KVM, Proxmox, VMware, and VirtualBox, but a platform is considered supported only when the notes for that exact Nulx Linux release confirm support.
 
 ## Record the environment
 
-Capture:
+Include the following details in your report:
 
-- release tag, exact ISO filename, and SHA-256;
-- physical hardware or hypervisor and version;
-- CPU architecture, memory, GPU, network, and storage controller;
-- UEFI or legacy boot, Secure Boot state, and encryption choices;
-- live session or installed session;
-- Wayland or X11 when relevant;
-- exact reproduction steps, expected behavior, and actual behavior.
+- Release tag, exact ISO filename, and SHA-256
+- Physical hardware or hypervisor and version
+- CPU architecture, memory, GPU, network, and storage controller
+- UEFI or legacy boot, Secure Boot state, and encryption choices
+- Whether you used a live or installed session
+- Wayland or X11, when relevant
+- Exact reproduction steps, expected behavior, and actual behavior
 
 ## Suggested test areas
 
-- ISO boot in UEFI and supported legacy modes;
-- live desktop startup and display scaling;
-- installer partitioning, locale, keyboard, user creation, and first boot;
-- suspend, resume, shutdown, restart, lock, and login;
-- wired, Wi-Fi, audio, Bluetooth, GPU acceleration, and external displays;
-- Nulx Launcher, Terminal, Command Center, Offline Guide, and tool registry;
-- virtual desktops, keyboard navigation, accessibility, and multiple displays;
-- upgrades and package installation only when the release notes authorize them.
+- ISO boot in UEFI and supported legacy modes
+- Live desktop startup and display scaling
+- Installer partitioning, locale, keyboard, user creation, and first boot
+- Suspend, resume, shutdown, restart, lock, and login
+- Wired networking, Wi-Fi, audio, Bluetooth, GPU acceleration, and external displays
+- Nulx Launcher, Terminal, Command Center, Offline Guide, and tool registry
+- Virtual desktops, keyboard navigation, accessibility, and multiple displays
+- Upgrades and package installation only when the release notes authorize them
 
 ## Submit a report
 

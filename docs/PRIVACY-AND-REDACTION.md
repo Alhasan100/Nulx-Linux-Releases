@@ -4,13 +4,13 @@ Public GitHub issues, comments, and attachments are visible to everyone. Treat t
 
 ## Remove before posting
 
-- passwords, API tokens, cookies, private keys, recovery codes, and authentication databases;
-- full names, email addresses, phone numbers, account identifiers, and client information;
-- home-directory names and local file paths that identify a person or organization;
-- public or private IP addresses when they are not essential, MAC addresses, serial numbers, UUIDs, and device identifiers;
-- Wi-Fi SSIDs, VPN endpoints, browser profiles, shell history, clipboard contents, and recent-document lists;
-- proprietary source, target data, packet payloads, malware samples, or information from systems you were not authorized to test;
-- EXIF metadata and unrelated screen content in screenshots.
+- Passwords, API tokens, cookies, private keys, recovery codes, and authentication databases
+- Full names, email addresses, phone numbers, account identifiers, and client information
+- Home-directory names and local file paths that identify a person or organization
+- Public or private IP addresses when they are not essential, MAC addresses, serial numbers, UUIDs, and device identifiers
+- Wi-Fi SSIDs, VPN endpoints, browser profiles, shell history, clipboard contents, and recent-document lists
+- Proprietary source, target data, packet payloads, malware samples, or information from systems you were not authorized to test
+- EXIF metadata and unrelated screen content in screenshots
 
 ## Safer diagnostic process
 

@@ -12,12 +12,12 @@ The beta candidate is being developed around a curated security-tool registry an
 
 ## Purpose of this repository
 
-This repository is intentionally separated from the private engineering repository. It exists only for:
+This repository is intentionally separated from the private engineering repository. It is limited to:
 
-- the canonical release record, official ISO download location, and verification material;
-- public beta documentation;
-- installation, hardware-compatibility, and defect reports;
-- coordinated private reporting of security vulnerabilities.
+- The canonical release record, official ISO download location, and verification material
+- Public beta documentation
+- Installation, hardware-compatibility, and defect reports
+- Coordinated private reporting of security vulnerabilities
 
 It does **not** publish the Nulx Linux product source tree, private build pipeline, internal CI, raw test evidence, VM images, credentials, or developer logs. GitHub's automatic source archives contain only the public documentation and repository configuration stored here.
 
@@ -25,7 +25,7 @@ It does **not** publish the Nulx Linux product source tree, private build pipeli
 
 Every release begins on the [Releases page](https://github.com/Alhasan100/Nulx-Linux-Releases/releases), which is the canonical record for the version and its verification files. GitHub currently requires each individual Release asset to be under 2 GiB. The current unreleased candidate exceeds that limit, so it cannot be uploaded unchanged as one GitHub asset.
 
-Cloudflare R2 Standard has been selected as the planned ISO host behind `https://downloads.nulxlinux.com`. The bucket and production custom domain are not yet configured or release-approved. No object is official merely because it appears at that hostname: users must start from the canonical GitHub Release and follow only the exact URL, size, and SHA-256 bound by its signed manifest. Each approved release must include:
+Cloudflare R2 Standard has been selected as the planned ISO host behind `https://downloads.nulxlinux.com`. The bucket and production custom domain are not yet configured or release-approved. A file is not official merely because it appears at that hostname. Users must start from the canonical GitHub Release and follow only the exact URL, size, and SHA-256 bound by its signed manifest. Each approved release must include:
 
 | Artifact | Purpose |
 | --- | --- |
@@ -42,7 +42,7 @@ Never download a Nulx Linux ISO from an issue attachment, pull request, unoffici
 
 ### Release safety process
 
-Releases are prepared as drafts. All required assets are attached to the draft, then the owner runs the repository's manual **Public repository boundary** workflow. The workflow refuses to continue unless it can verify the public release key, manifest signature, companion hashes and contents, complete ISO byte size and SHA-256, and detached ISO signature. Only a successful manual run publishes the prepared draft. GitHub release immutability is enabled so future published assets and their tag cannot be replaced silently.
+Releases are prepared as drafts. After all required assets are attached to the draft, the owner runs the repository's manual **Public repository boundary** workflow. The workflow refuses to continue unless it can verify the public release key, manifest signature, companion hashes and contents, complete ISO byte size and SHA-256, and detached ISO signature. Only a successful manual run publishes the prepared draft. GitHub release immutability is enabled so future published assets and their tag cannot be replaced silently.
 
 The public signing key has not been generated and approved yet. Until it is added at `keys/nulx-release-public-key.asc` and its fingerprint is published through an independent official channel, release validation intentionally fails.
 

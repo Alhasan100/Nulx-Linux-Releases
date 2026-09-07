@@ -6,10 +6,10 @@ This repository is the public distribution, verification, documentation, and bet
 
 Security coverage includes:
 
-- official GitHub Releases and downloadable Nulx Linux artifacts;
-- checksums, signatures, public signing keys, SBOMs, manifests, license bundles, and release notes;
-- repository settings, issue forms, and public-boundary validation;
-- security defects that affect a currently supported, official Nulx Linux ISO.
+- Official GitHub Releases and downloadable Nulx Linux artifacts
+- Checksums, signatures, public signing keys, SBOMs, manifests, license bundles, and release notes
+- Repository settings, issue forms, and public-boundary validation
+- Security defects that affect a currently supported, official Nulx Linux ISO
 
 No public beta has been released yet, so no Nulx Linux version is currently supported through this repository.
 
@@ -19,11 +19,11 @@ Do not create a public issue for a suspected vulnerability. Use [GitHub private 
 
 Include only the information needed to assess the problem:
 
-- affected release tag and the ISO SHA-256 you verified;
-- realistic impact and required attacker access;
-- minimal, safe reproduction steps;
-- sanitized logs or screenshots;
-- whether any details are already public.
+- Affected release tag and the ISO SHA-256 you verified
+- Realistic impact and required attacker access
+- Minimal, safe reproduction steps
+- Sanitized logs or screenshots
+- Whether any details are already public
 
 Never submit passwords, API tokens, cookies, private keys, personal data, client information, live third-party target data, or weaponized proof-of-concept material. Do not test against systems or people without explicit authorization.
 
@@ -33,13 +33,13 @@ No response-time or disclosure-time commitment is promised until a formal securi
 
 Examples include:
 
-- an official artifact that does not match its checksum, signature, or manifest;
-- release-channel, tag, workflow, or download-link takeover;
-- accidentally published credentials, private source, internal artifacts, or sensitive diagnostics;
-- verification instructions that accept a substituted or invalid artifact;
-- unsafe repository automation that exposes privileged credentials to untrusted contributions;
-- installer, boot, update, authentication, privilege-boundary, or insecure-default defects in a supported official ISO;
-- a Nulx-specific integration that materially increases the impact of an upstream vulnerability.
+- An official artifact that does not match its checksum, signature, or manifest
+- Release-channel, tag, workflow, or download-link takeover
+- Accidentally published credentials, private source, internal artifacts, or sensitive diagnostics
+- Verification instructions that accept a substituted or invalid artifact
+- Unsafe repository automation that exposes privileged credentials to untrusted contributions
+- Installer, boot, update, authentication, privilege-boundary, or insecure-default defects in a supported official ISO
+- A Nulx-specific integration that materially increases the impact of an upstream vulnerability
 
 Compromise of signing or release authority, embedded credentials, reliable default-install remote code execution, or reliable root compromise is treated as potentially critical or high severity.
 
@@ -59,20 +59,20 @@ The supported publication path is: prepare a draft, upload every companion artif
 
 The following material is prohibited:
 
-- product source code, private patches, build recipes, internal CI, package caches, or Git bundles;
-- passwords, password hashes, QA credentials, tokens, cookies, recovery material, private keys, or `.env` files;
-- developer home paths, internal repository identifiers, private URLs, internal IP addresses, shell history, or raw build logs;
-- VM disks, snapshots, checkpoints, installer answer files, crash dumps, packet captures, databases, or support bundles that have not been sanitized;
-- authentication automation, private malware samples, or data from unauthorized targets.
+- Product source code, private patches, build recipes, internal CI, package caches, or Git bundles
+- Passwords, password hashes, QA credentials, tokens, cookies, recovery material, private keys, or `.env` files
+- Developer home paths, internal repository identifiers, private URLs, internal IP addresses, shell history, or raw build logs
+- VM disks, snapshots, checkpoints, installer answer files, crash dumps, packet captures, databases, or support bundles that have not been sanitized
+- Authentication automation, private malware samples, or data from unauthorized targets
 
 ## Out of scope
 
-- modified, unofficial, unsupported, or unverifiable images;
-- upstream-only Debian, KDE, or third-party tool defects without Nulx-specific impact;
-- ordinary UI defects, compatibility requests, feature requests, and documentation errors;
-- scanner output without reproducible reachability or credible impact;
-- attacks against GitHub itself, spam, social engineering, and third-party availability;
-- requests for access to the private engineering repository.
+- Modified, unofficial, unsupported, or unverifiable images
+- Upstream-only Debian, KDE, or third-party tool defects without Nulx-specific impact
+- Ordinary UI defects, compatibility requests, feature requests, and documentation errors
+- Scanner output without reproducible reachability or credible impact
+- Attacks against GitHub itself, spam, social engineering, and third-party availability
+- Requests for access to the private engineering repository
 
 Report ordinary defects through the appropriate public issue form instead.
 

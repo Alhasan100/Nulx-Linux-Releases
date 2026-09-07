@@ -1,19 +1,19 @@
 # Contributing to the public beta
 
-This repository accepts high-quality beta reports and documentation improvements. Nulx Linux product development remains in a separate private engineering repository.
+This repository accepts beta reports and documentation improvements. Nulx Linux product development remains in a separate private engineering repository.
 
 ## Beta reports
 
-Use the structured issue form that best matches the result. A useful report identifies the exact release, verifies the ISO checksum, explains the environment, and provides deterministic reproduction steps. Read [Privacy and redaction](docs/PRIVACY-AND-REDACTION.md) before sharing diagnostics.
+Use the structured issue form that best matches your report. Include the exact release, verified ISO checksum, environment details, and repeatable reproduction steps. Read [Privacy and redaction](docs/PRIVACY-AND-REDACTION.md) before sharing diagnostics.
 
 ## Pull requests
 
 Pull requests are limited to corrections and improvements to the allowlisted public documentation and issue forms. They must not contain:
 
-- Nulx Linux product source or build files;
-- executable or binary files, archives, ISO images, Git LFS objects, or submodules;
-- generated logs, VM images, screenshots containing sensitive information, or test data from third parties;
-- credentials, tokens, private keys, internal paths, or private repository information.
+- Nulx Linux product source or build files
+- Executable or binary files, archives, ISO images, Git LFS objects, or submodules
+- Generated logs, VM images, screenshots containing sensitive information, or test data from third parties
+- Credentials, tokens, private keys, internal paths, or private repository information
 
 `CODEOWNERS`, the public-boundary workflow, and the release public key are maintainer-controlled security files and are not accepted through external pull requests.
 
