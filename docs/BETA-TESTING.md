@@ -14,7 +14,7 @@ No public beta ISO is available until an approved release appears on the officia
 6. Do not expose an untrusted beta system directly to sensitive networks or production credentials.
 7. Use security tools only on systems you own or are explicitly authorized to test.
 
-Nulx Linux targets ordinary desktop and laptop computers. VM testing is expected across Hyper-V, QEMU/KVM, Proxmox, VMware, and VirtualBox, but a platform is considered supported only when the notes for that exact Nulx Linux release confirm support.
+The current beta validation focuses on Hyper-V and VirtualBox, alongside physical hardware testing. Other environments are not confirmed supported. Always check the release notes for the exact image and platform before testing.
 
 ## Record the environment
 

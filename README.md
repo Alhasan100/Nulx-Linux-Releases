@@ -1,14 +1,16 @@
 # Nulx Linux Releases
 
-This is the official public release and beta-feedback repository for **Nulx Linux**.
+The official release information, download verification and beta-feedback repository for **Nulx Linux**.
 
-> **Release status:** no public beta ISO is available yet. A download will appear only after the candidate passes the documented release gates, is signed, and its published artifacts are independently verified.
+> **Not released:** no public beta or approved ISO is available. Downloads will be announced here only after release validation and signing are complete.
 
 ## What is Nulx Linux?
 
 Nulx Linux is an independent Debian 13-based desktop distribution built around KDE Plasma 6 and a coherent Nulx visual identity. It is designed for cybersecurity learning, authorized offensive and defensive workflows, system administration, development, and everyday desktop use. It is not a Kali Linux derivative or reskin.
 
-The beta candidate is being developed around a curated security-tool registry and Nulx-branded desktop experiences such as Nulx Launcher, Nulx Terminal, Nulx Command Center, and a provider-neutral Nulx AI interface with a safe Offline Guide. A feature is considered part of the public beta only after it is present in the signed ISO and verified in the release notes.
+Development includes Nulx Launcher, Terminal, Command Center and Nulx AI with a local Offline Guide. The tool registry describes planned capabilities, not proof that every tool is installed. Only features verified in the signed ISO will appear as supported in its release notes.
+
+Seven tool routes remain under review. Installed-system Secure Boot, signed updates and live-account features also require acceptance testing before the beta is ready.
 
 ## Purpose of this repository
 
@@ -23,9 +25,11 @@ It does **not** publish the Nulx Linux product source tree, private build pipeli
 
 ## Downloads
 
-Every release begins on the [Releases page](https://github.com/Alhasan100/Nulx-Linux-Releases/releases), which is the canonical record for the version and its verification files. GitHub currently requires each individual Release asset to be under 2 GiB. The current unreleased candidate exceeds that limit, so it cannot be uploaded unchanged as one GitHub asset.
+Start at the [Releases page](https://github.com/Alhasan100/Nulx-Linux-Releases/releases). It will provide the official version record, verification files and approved ISO link. Large ISOs may be hosted separately from GitHub's release assets.
 
-Cloudflare R2 Standard has been selected as the planned ISO host behind `https://downloads.nulxlinux.com`. The bucket and production custom domain are not yet configured or release-approved. A file is not official merely because it appears at that hostname. Users must start from the canonical GitHub Release and follow only the exact URL, size, and SHA-256 bound by its signed manifest. Each approved release must include:
+Cloudflare R2 Standard and `downloads.nulxlinux.com` are the planned download service, not an active or approved release channel. A hostname alone does not establish authenticity. Use only the exact ISO URL, byte size and SHA-256 recorded in the official Release's signed manifest.
+
+Each approved release must include:
 
 | Artifact | Purpose |
 | --- | --- |

@@ -1,6 +1,8 @@
 # Verify a Nulx Linux download
 
-An ISO is trusted only when its checksum and detached signature match the files in the same official GitHub Release.
+No approved public ISO is available yet. These instructions apply only after an official release is published. The planned `downloads.nulxlinux.com` service is not currently an approved download channel.
+
+An ISO must match the checksum, detached signature and signed manifest from the same official GitHub Release.
 
 ## 1. Confirm the source
 
@@ -8,7 +10,15 @@ Begin only from:
 
 `https://github.com/Alhasan100/Nulx-Linux-Releases/releases`
 
-Open the selected Release and verify the signature of its manifest. If the ISO is too large for a GitHub Release asset, use only the exact HTTPS URL recorded inside that signed manifest. Do not boot a file from an issue attachment, pull request, chat message, search result, or unofficial mirror.
+Read the selected Release's notes for the approved public key and fingerprint. Confirm the fingerprint through both this repository and the official Nulx Linux website before importing or trusting that key.
+
+Download the manifest and its signature from the Release. After importing the verified public key, check the manifest signature:
+
+```bash
+gpg --verify Nulx-Linux-<version>-MANIFEST.json.asc Nulx-Linux-<version>-MANIFEST.json
+```
+
+Replace `<version>` with the actual release version in every example on this page. The signature must be valid and identify the approved fingerprint. Use only the exact HTTPS ISO URL in that signed manifest, even when the file is hosted outside GitHub. Do not boot files from issue attachments, pull requests, chat messages, search results or unofficial mirrors.
 
 ## 2. Verify SHA-256
 
@@ -30,9 +40,7 @@ The hexadecimal values must match exactly. Stop if they differ.
 
 ## 3. Verify the detached signature
 
-The release notes will identify the approved signing key and fingerprint. Confirm that fingerprint through both this repository and the official Nulx Linux website before trusting a newly downloaded key.
-
-After importing the verified public key:
+Use the same verified public key to check the ISO signature. Use the exact signature filename supplied by the Release, which may end in `.sig` or `.asc`:
 
 ```bash
 gpg --verify Nulx-Linux-<version>-amd64.iso.sig Nulx-Linux-<version>-amd64.iso
