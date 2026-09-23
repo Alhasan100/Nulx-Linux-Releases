@@ -18,13 +18,17 @@ Updated September 23, 2026. These are development milestones, not a public beta 
 | --- | --- | --- |
 | Nulx AI interface | One window for local guidance and online chat, quieter controls, theme-aware neon accents, and drafts preserved across modes | Final-ISO visual and accessibility checks |
 | Online account | Real sign-in, one learning reply, and saved-account reconnection after app restart and system reboot | Wider model checks, expiry, revocation, credential-storage review, and end-to-end action tests |
+| Reviewed commands | Bounded action-policy and private-history checks passed in isolated Linux tests, including four storage-failure cases | Installed workflow acceptance, cancellation, one-use approval and separate result sharing. No unrestricted shell access |
 | App updates | Nulx AI upgraded in place without reinstalling the OS, preserving other packages and the saved account | Signed public update delivery, release-wide upgrade and recovery tests |
 | Desktop | Top panel, app shortcuts, and virtual desktops have live-session evidence | Integration and migration checks on the final installed image |
-| Tools | 64 catalog records, with 57 reviewed package routes | Seven tools remain excluded pending packaging and license review. The final installed-tool inventory must also pass |
+| Appearance | Four original themes, plus native preview and isolated package checks for the new Spectrum neon theme | Spectrum installation and all five themes in the final desktop. Obsidian remains the default |
+| Tools and wordlists | 64 catalog records, with 57 reviewed package routes | All 64 tools and organized wordlists remain the beta target. Seven routes still need approval, followed by final installed-inventory checks |
 | Boot and hardware | An earlier clean Hyper-V install passed, and Secure Boot was enabled in the tested installation | Final-image installation and kernel-update checks, VirtualBox installation, and physical hardware coverage |
 | Public beta | No approved ISO is available | Remaining stability, licensing, signing, and publication gates |
 
-The latest focused native Linux suite passed 219 tests. The full source suite passed 1,119 tests with 240 platform-specific skips. Component tests do not replace final-ISO acceptance.
+The latest broad source run completed 1,394 tests: 1,142 passed, 252 were skipped, and none failed. Separate Linux tests covered private-history storage failures and updater interruption handling. These tests used isolated fixtures, not a real scan or a failed production update. Platform skips and component checks do not replace final-ISO acceptance.
+
+Newer application and appearance packages have passed isolated checks but are not yet accepted on the installed desktop. The older installed baseline still has a bottom dock. One top panel remains the intended layout. No new ISO was built for this checkpoint.
 
 Online chat uses the user's own account and requires consent before sending messages. Provider access and usage limits apply. Nulx AI is not an unrestricted vulnerability scanner or autonomous desktop agent. No shared account or developer key is included.
 
