@@ -6,11 +6,29 @@ The official release information, download verification and beta-feedback reposi
 
 ## What is Nulx Linux?
 
-Nulx Linux is an independent Debian 13-based desktop distribution built around KDE Plasma 6 and a coherent Nulx visual identity. It is designed for cybersecurity learning, authorized offensive and defensive workflows, system administration, development, and everyday desktop use. It is not a Kali Linux derivative or reskin.
+Nulx Linux is an independent Debian 13-based desktop distribution built around KDE Plasma 6 and a coherent Nulx visual identity. It is being built for cybersecurity students and lab users with basic Linux knowledge, combining learning guidance, organized tools, and authorized offensive and defensive workflows. It is not a Kali Linux derivative or reskin.
 
-Development includes Nulx Launcher, Terminal, Command Center and Nulx AI with a local Offline Guide. The tool registry describes planned capabilities, not proof that every tool is installed. Only features verified in the signed ISO will appear as supported in its release notes.
+Development includes Nulx Launcher, Terminal, Command Center and Nulx AI with local guidance and optional online chat. The tool registry describes planned capabilities, not proof that every tool is installed. Only features verified in the signed ISO will appear as supported in its release notes.
 
-Seven tool routes remain under review. Installed-system Secure Boot, signed updates and live-account features also require acceptance testing before the beta is ready.
+## Development status
+
+Updated September 23, 2026. These are development milestones, not a public beta release.
+
+| Area | Verified progress | Still required |
+| --- | --- | --- |
+| Nulx AI interface | One window for local guidance and online chat, quieter controls, theme-aware neon accents, and drafts preserved across modes | Final-ISO visual and accessibility checks |
+| Online account | Real sign-in, one learning reply, and saved-account reconnection after app restart and system reboot | Wider model checks, expiry, revocation, credential-storage review, and end-to-end action tests |
+| App updates | Nulx AI upgraded in place without reinstalling the OS, preserving other packages and the saved account | Signed public update delivery, release-wide upgrade and recovery tests |
+| Desktop | Top panel, app shortcuts, and virtual desktops have live-session evidence | Integration and migration checks on the final installed image |
+| Tools | 64 catalog records, with 57 approved package routes | Seven routes remain excluded pending review, plus a complete installed-tool and license inventory |
+| Boot and hardware | An earlier clean Hyper-V install passed, and Secure Boot was enabled in the tested installation | Final-image installation and kernel-update checks, VirtualBox installation, and physical hardware coverage |
+| Public beta | No approved ISO is available | Remaining stability, licensing, signing, and publication gates |
+
+The latest focused native Linux suite passed 219 tests. The full source suite passed 1,119 tests with 240 platform-specific skips. Component tests do not replace final-ISO acceptance.
+
+Online chat uses the user's own account and requires consent before sending messages. Provider access and usage limits apply. Nulx AI is not an unrestricted vulnerability scanner or autonomous desktop agent. No shared account or developer key is included.
+
+See the [development update](https://nulxlinux.com/updates/#nulx-ai-single-window-installed-update), [Nulx AI preview](https://nulxlinux.com/nulx-ai/), and [remaining roadmap](https://nulxlinux.com/roadmap/).
 
 ## Purpose of this repository
 

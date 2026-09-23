@@ -16,6 +16,8 @@ No public beta ISO is available until an approved release appears on the officia
 
 The current beta validation focuses on Hyper-V and VirtualBox, alongside physical hardware testing. Other environments are not confirmed supported. Always check the release notes for the exact image and platform before testing.
 
+The September 23 development checkpoint includes real-account chat, saved-account reconnection, a single-window AI interface, and an in-place AI package upgrade. These checks were performed on a development installation. They do not make a public ISO available or establish complete account, action, hardware, or upgrade acceptance. See the [current status](../README.md#development-status).
+
 ## Record the environment
 
 Include the following details in your report:
@@ -36,6 +38,8 @@ Include the following details in your report:
 - Suspend, resume, shutdown, restart, lock, and login
 - Wired networking, Wi-Fi, audio, Bluetooth, GPU acceleration, and external displays
 - Nulx Launcher, Terminal, Command Center, Offline Guide, and tool registry
+- Nulx AI mode switching, unsent drafts, keyboard navigation, and clean closure
+- Optional online sign-in, cancellation, reconnect, explicit sharing consent, and clear usage-limit errors when authorized by the release notes
 - Virtual desktops, keyboard navigation, accessibility, and multiple displays
 - Upgrades and package installation only when the release notes authorize them
 
