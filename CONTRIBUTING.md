@@ -17,7 +17,7 @@ Pull requests are limited to corrections and improvements to the allowlisted pub
 
 `CODEOWNERS`, the public-boundary workflow, and the release public key are maintainer-controlled security files and are not accepted through external pull requests.
 
-Release binaries are published only by maintainers through GitHub Releases. Binary pull requests are never accepted.
+Only maintainers publish release records and verification files through GitHub Releases. An ISO may be hosted separately at the exact URL in its signed manifest. Binary pull requests are never accepted.
 
 By contributing, you agree that your repository contribution is available under the repository's MIT License and that you have the right to submit it.
 
