@@ -24,7 +24,8 @@ Updated September 27, 2026. These results come from a development installation, 
 | Themes | All five themes passed installed KDE visual smoke checks, including Spectrum neon borders and translucent Terminal | Chooser layout and complete visual acceptance. Obsidian remains the product default |
 | Nulx apps | Launcher and Command Center are separately packaged. Menu routes start actual tools | Complete click-through testing and final-image integration |
 | Nulx AI | Single-window guidance and online chat. Earlier real sign-in, learning reply and reconnection checks. In-place app and runtime upgrades | Account expiry, revocation, secure storage and end-to-end reviewed-action acceptance |
-| Package safety | Dependency and package-state checks passed. Existing service safeguards are intact, with no new running services or listening endpoints | Current license inventory, signed updates and recovery coverage |
+| Package safety | Dependency and package-state checks passed. Existing service safeguards are intact, with no new running services or listening endpoints | Signed updates and recovery coverage |
+| License records | Refreshed inventory passes for all 2,072 installed packages. The missing Zeek records are delivered without changing existing program packages | Complete bundled-component notice, source and redistribution review |
 | Boot and platforms | Earlier Hyper-V installation and direct-disk boot checks. Secure Boot enabled on the tested installation | Final candidate in Hyper-V and VirtualBox, kernel updates and physical hardware |
 | Public beta | No approved ISO or release date | Remaining stability, licensing, source-delivery, signing and publication gates |
 
@@ -32,7 +33,7 @@ Startup checks confirm that executables run. They do not mean every feature has 
 
 ### What happens next
 
-1. Complete third-party notices and required source documentation. The current Zeek packages lack the Debian license records required by the inventory check. The older inventory is not current.
+1. Complete third-party notice and source review. Installed license-file coverage now passes, but that does not settle every redistribution obligation. All 18 native components bundled with mitmproxy have exact upstream matches. Its remaining component, source and maintenance review is still open.
 2. Integrate accepted packages and organized wordlists into reproducible ISO inputs.
 3. Test fresh installations, tool retention, app workflows, updates, reboot, accessibility and supported hardware.
 4. Publish known limitations, signed verification material and an approved ISO only after the release gates pass.
