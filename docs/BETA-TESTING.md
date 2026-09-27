@@ -16,7 +16,7 @@ No public beta ISO is available until an approved release appears on the officia
 
 The current beta validation focuses on Hyper-V and VirtualBox, alongside physical hardware testing. Other environments are not confirmed supported. Always check the release notes for the exact image and platform before testing.
 
-The September 23 development checkpoint includes real-account chat, saved-account reconnection, a single-window AI interface, and an in-place AI package upgrade. Those checks were performed on a development installation. Newer package, guarded-command, private-history, updater and Spectrum checks used isolated test environments. They do not make a public ISO available or establish complete account, action, hardware, or upgrade acceptance. See the [current status](../README.md#development-status).
+The September 27 development checkpoint has all 64 catalog tools installed and startup-tested. The installed top panel, five themes and separately packaged Nulx apps also have focused test evidence. Earlier checks covered single-window AI chat, account reconnection and in-place upgrades. None of these results approves a public ISO or establishes complete tool, account, action, hardware or upgrade acceptance. See the [current status](../README.md#development-status).
 
 ## Record the environment
 
@@ -38,6 +38,8 @@ Include the following details in your report:
 - Suspend, resume, shutdown, restart, lock, and login
 - Wired networking, Wi-Fi, audio, Bluetooth, GPU acceleration, and external displays
 - Nulx Launcher, Terminal, Command Center, Offline Guide, and tool registry
+- Actual tool installation and launch from the menu, not just the presence of a shortcut
+- Tool prerequisites, wordlists and runtime data, distinguishing missing setup from a failed installation
 - Nulx AI mode switching, unsent drafts, keyboard navigation, and clean closure
 - Optional online sign-in, cancellation, reconnect, explicit sharing consent, and clear usage-limit errors when authorized by the release notes
 - Reviewed command proposals, one-use approval, cancellation and separate result sharing only when the tested release explicitly supports them
