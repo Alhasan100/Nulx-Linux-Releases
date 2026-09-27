@@ -12,27 +12,36 @@ Development includes Nulx Launcher, Terminal, Command Center, and Nulx AI with l
 
 ## Development status
 
-Updated September 23, 2026. These are development milestones, not a public beta release.
+Updated September 27, 2026. These results come from a development installation, not a released ISO.
 
-| Area | Verified progress | Still required |
+**All 64 catalog tools are installed and have passed executable startup checks.** Launcher identifies all 64 as installed. The public beta remains unreleased.
+
+| Area | Verified on the development system | Before public release |
 | --- | --- | --- |
-| Nulx AI interface | One window for local guidance and online chat, quieter controls, theme-aware neon accents, and drafts preserved across modes | Final-ISO visual and accessibility checks |
-| Online account | Real sign-in, one learning reply, and saved-account reconnection after app restart and system reboot | Wider model checks, expiry, revocation, credential-storage review, and end-to-end action tests |
-| Reviewed commands | Bounded action-policy and private-history checks passed in isolated Linux tests, including four storage-failure cases | Installed workflow acceptance, cancellation, one-use approval and separate result sharing. No unrestricted shell access |
-| App updates | Nulx AI upgraded in place without reinstalling the OS, preserving other packages and the saved account | Signed public update delivery, release-wide upgrade and recovery tests |
-| Desktop | Top panel, app shortcuts, and virtual desktops have live-session evidence | Integration and migration checks on the final installed image |
-| Appearance | Four original themes, plus native preview and isolated package checks for the new Spectrum neon theme | Spectrum installation and all five themes in the final desktop. Obsidian remains the default |
-| Tools and wordlists | 64 catalog records, with 57 reviewed package routes | All 64 tools and organized wordlists remain the beta target. Seven routes still need approval, followed by final installed-inventory checks |
-| Boot and hardware | An earlier clean Hyper-V install passed, and Secure Boot was enabled in the tested installation | Final-image installation and kernel-update checks, VirtualBox installation, and physical hardware coverage |
-| Public beta | No approved ISO is available | Remaining stability, licensing, signing, and publication gates |
+| Tools | 64/64 installed, with help or version startup checks for every executable | Complete workflow coverage, redistribution review and fresh-ISO retention |
+| Functional tests | Owned-data tests for Ghidra, Radare2, Zeek, Nmap and mitmproxy. Ordinary-user Firejail isolation and AppArmor checks | Broader tool, runtime-data and hardware testing |
+| Desktop | One top panel with the categorized menu, app shortcuts and virtual desktops. It survives a desktop-shell restart | Final-image reboot, keyboard, accessibility and multi-display checks |
+| Themes | All five themes passed installed KDE visual smoke checks, including Spectrum neon borders and translucent Terminal | Chooser layout and complete visual acceptance. Obsidian remains the product default |
+| Nulx apps | Launcher and Command Center are separately packaged. Menu routes start actual tools | Complete click-through testing and final-image integration |
+| Nulx AI | Single-window guidance and online chat. Earlier real sign-in, learning reply and reconnection checks. In-place app and runtime upgrades | Account expiry, revocation, secure storage and end-to-end reviewed-action acceptance |
+| Package safety | Dependency and package-state checks passed. Existing service safeguards are intact, with no new running services or listening endpoints | Current license inventory, signed updates and recovery coverage |
+| Boot and platforms | Earlier Hyper-V installation and direct-disk boot checks. Secure Boot enabled on the tested installation | Final candidate in Hyper-V and VirtualBox, kernel updates and physical hardware |
+| Public beta | No approved ISO or release date | Remaining stability, licensing, source-delivery, signing and publication gates |
 
-The latest broad source run completed 1,394 tests: 1,142 passed, 252 were skipped, and none failed. Separate Linux tests covered private-history storage failures and updater interruption handling. These tests used isolated fixtures, not a real scan or a failed production update. Platform skips and component checks do not replace final-ISO acceptance.
+Startup checks confirm that executables run. They do not mean every feature has been exercised, every service is enabled, or every tool needs no configuration. The functional tests used owned data and isolated local fixtures, not public targets.
 
-Newer application and appearance packages have passed isolated checks but are not yet accepted on the installed desktop. The older installed baseline still has a bottom dock. One top panel remains the intended layout. No new ISO was built for this checkpoint.
+### What happens next
+
+1. Complete third-party notices and required source documentation. The current Zeek packages lack the Debian license records required by the inventory check. The older inventory is not current.
+2. Integrate accepted packages and organized wordlists into reproducible ISO inputs.
+3. Test fresh installations, tool retention, app workflows, updates, reboot, accessibility and supported hardware.
+4. Publish known limitations, signed verification material and an approved ISO only after the release gates pass.
+
+No ISO was built or published for this milestone. Older development updates retain their original dates and test scope.
 
 Online chat uses the user's own account and requires consent before sending messages. Provider access and usage limits apply. Nulx AI is not an unrestricted vulnerability scanner or autonomous desktop agent. No shared account or developer key is included.
 
-See the [development update](https://nulxlinux.com/updates/#nulx-ai-single-window-installed-update), [real app captures](https://nulxlinux.com/screenshots/), [Nulx AI features and limits](https://nulxlinux.com/nulx-ai/), and [remaining roadmap](https://nulxlinux.com/roadmap/).
+See the [September 27 test summary](https://nulxlinux.com/updates/#all-64-tools-installed), [complete tool catalog](https://nulxlinux.com/tools/), [real app captures](https://nulxlinux.com/screenshots/), and [remaining roadmap](https://nulxlinux.com/roadmap/).
 
 ## Purpose of this repository
 
