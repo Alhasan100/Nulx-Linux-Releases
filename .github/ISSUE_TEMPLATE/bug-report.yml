@@ -8,7 +8,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for testing Nulx Linux. Public issues are visible to everyone. Remove credentials, personal data, internal addresses, client information, and unrelated logs before submitting.
+        No public beta or approved ISO is available yet. This form is for a future official release. For documentation corrections, follow CONTRIBUTING.md. Public issues are visible to everyone. Remove credentials, personal data, internal addresses, client information, and unrelated logs before submitting.
   - type: input
     id: release
     attributes:

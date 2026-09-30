@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Documentation feedback
+    url: https://github.com/Alhasan100/Nulx-Linux-Releases/blob/main/CONTRIBUTING.md
+    about: Documentation corrections are welcome now. No public beta or approved ISO is available yet.
   - name: Security vulnerability
     url: https://github.com/Alhasan100/Nulx-Linux-Releases/security/advisories/new
     about: Report suspected vulnerabilities privately. Never disclose security details in a public issue.

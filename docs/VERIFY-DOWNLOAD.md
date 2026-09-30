@@ -4,6 +4,29 @@ No approved public ISO is available yet. These instructions apply only after an 
 
 An ISO must match the checksum, detached signature and signed manifest from the same official GitHub Release.
 
+## Required release files
+
+Every approved release must provide the following files from the same version:
+
+| Artifact | Purpose |
+| --- | --- |
+| `Nulx-Linux-<version>-amd64.iso` | Bootable image at the exact official HTTPS URL in the signed manifest |
+| `.iso.sha256` | SHA-256 integrity checksum |
+| `.iso.sig` or `.iso.asc` | Detached ISO signature |
+| `Nulx-Linux-<version>-SBOM.spdx.json` | Sanitized software bill of materials |
+| `Nulx-Linux-<version>-THIRD-PARTY-LICENSES.txt` | Third-party notices and source-delivery information |
+| `Nulx-Linux-<version>-RELEASE-NOTES.md` | Verified changes, limitations and test coverage |
+| `Nulx-Linux-<version>-MANIFEST.json` | ISO filename, URL, byte size, architecture and companion-file hashes |
+| `Nulx-Linux-<version>-MANIFEST.json.asc` | Detached signature for the manifest |
+
+Large ISOs may be hosted separately from GitHub. A hostname alone does not establish authenticity. The approved ISO URL, byte size and SHA-256 must be recorded in the signed manifest on the official Release.
+
+## Release signing and publication
+
+Releases are prepared as drafts. The maintainer attaches all required files and runs the manual **Public repository boundary** workflow. It checks the approved public key, manifest signature, companion-file hashes and contents, complete ISO byte size and SHA-256, and detached ISO signature before publishing the draft. Published releases are configured as immutable.
+
+The approved release public key is not yet published. Release validation remains blocked until `keys/nulx-release-public-key.asc` is approved and its fingerprint is available through an independent official channel. The planned download service and signed public update channel are not active release channels.
+
 ## 1. Confirm the source
 
 Begin only from:

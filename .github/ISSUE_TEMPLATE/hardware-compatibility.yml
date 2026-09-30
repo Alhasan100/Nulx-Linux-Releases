@@ -5,6 +5,10 @@ labels:
   - "type:hardware"
   - "status:needs-triage"
 body:
+  - type: markdown
+    attributes:
+      value: |
+        No public beta or approved ISO is available yet. This form is for a future official release. Compatibility must be reported for the exact image you tested.
   - type: input
     id: release
     attributes:
