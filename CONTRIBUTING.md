@@ -1,8 +1,10 @@
-# Contributing to the public beta
+# Contributing to Nulx Linux
 
-This repository accepts beta reports and documentation improvements. Nulx Linux product development remains in a separate private engineering repository.
+Documentation improvements are welcome now. Release reports will be useful once an approved public beta is available. Nulx Linux product development remains in a separate private engineering repository.
 
 ## Beta reports
+
+No public beta or approved ISO is available yet. When a release is published, follow the [beta testing guide](docs/BETA-TESTING.md) before reporting a result.
 
 Use the structured issue form that best matches your report. Include the exact release, verified ISO checksum, environment details, and repeatable reproduction steps. Read [Privacy and redaction](docs/PRIVACY-AND-REDACTION.md) before sharing diagnostics.
 

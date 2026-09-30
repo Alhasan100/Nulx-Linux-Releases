@@ -8,7 +8,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Use an unused test disk or disposable VM when possible. Public issues must not include passwords, partition contents, personal data, raw logs, or VM disks.
+        No public beta or approved ISO is available yet. This form is for a future official release. Use an unused test disk or disposable VM when possible. Public issues must not include passwords, partition contents, personal data, raw logs, or VM disks.
   - type: input
     id: release
     attributes:

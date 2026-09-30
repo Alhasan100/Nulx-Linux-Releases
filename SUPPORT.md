@@ -1,8 +1,8 @@
 # Support
 
-Nulx Linux has not released a public beta. No ISO is approved for public testing yet. You can propose documentation corrections using the [contribution guide](CONTRIBUTING.md).
+No public beta or approved ISO is available yet. For now, explore the [project documentation](https://nulxlinux.com/docs/) or propose a documentation correction through the [contribution guide](CONTRIBUTING.md).
 
-The reporting channels below apply once an official release is available. Suspected problems with release security or verification should always be reported privately.
+The release-reporting forms below apply once an approved beta is available. Suspected security or verification problems can be reported privately at any time.
 
 ## Choose the correct channel
 
