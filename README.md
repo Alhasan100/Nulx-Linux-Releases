@@ -22,14 +22,16 @@ Online chat requires your consent before sending a message. Provider access and 
 
 ## Development status
 
-These results describe the development installation. They do not establish the behavior or compatibility of a future release.
+Updated October 11, 2026. These results describe development software and image preparation. They do not establish the behavior or compatibility of a future release.
 
 - All 64 catalog tools are installed and have passed executable startup checks. Complete tool workflows still need wider testing.
+- The next beta image has 1,501 configured packages. Separate checks passed for its live-session defaults, Nulx access helper and current license inventories. Generated boot files and final privacy checks remain open.
 - Native Launcher, Command Center, Terminal and Nulx AI applications are under active development.
 - Tested Nulx app package upgrades retained existing user data without reinstalling the operating system.
-- Selected wordlists are installed. Full SecLists and original RockYou coverage remain under review.
+- The approved beta selection contains 116 reviewed wordlists, each with a compressed copy. Their packages passed build, upgrade and clean-install checks in isolated test roots. Final-ISO delivery and ordinary-user access remain unverified. Full upstream SecLists and original RockYou are deferred.
+- Local AI ping checks passed explicit review, one-use approval and cancellation tests. Nmap stays manually operated and has no execution, skill or MCP route in Nulx AI. Sharing an action result requires a separate decision.
 
-Before an ISO can be released, the project still needs final-image installation and reboot testing, hardware and VM validation, accessibility checks, licensing and source-delivery review, and approved signing. The public signed update channel is not configured.
+Before an ISO can be released, the project still needs accepted boot files and final-image privacy checks, complete source delivery and distribution conditions, clean installation and reboot testing, Secure Boot, hardware and VM validation, accessibility, update recovery and approved signing. The public signed update channel is not ready. Follow the [latest development update](https://nulxlinux.com/updates/#beta-image-preparation) for the current scope.
 
 ## Downloads and verification
 
